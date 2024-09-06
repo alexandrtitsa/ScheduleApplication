@@ -14,8 +14,15 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Column;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.proxy.HibernateProxy;
 
+@Getter
+@Setter
 @Entity
+@ToString
 @Table(name = "schedules")
 public class Schedule {
 
@@ -27,8 +34,8 @@ public class Schedule {
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
-    @Column(name = "time_slot", nullable = false, length = 50)
-    private String timeSlot;
+    @Column(name = "time_slot", nullable = false)
+    private Integer timeSlot;
 
     @Column(name = "room", nullable = false, length = 50)
     private String room;
@@ -41,6 +48,7 @@ public class Schedule {
     @JoinColumn(name = "teacher_id", nullable = false)
     private Teacher teacher;
 
+    @ToString.Exclude
     @ManyToMany
     @JoinTable(
         name = "student_schedules",
@@ -49,71 +57,19 @@ public class Schedule {
     )
     private Set<Student> students;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public String getTimeSlot() {
-        return timeSlot;
-    }
-
-    public void setTimeSlot(String timeSlot) {
-        this.timeSlot = timeSlot;
-    }
-
-    public String getRoom() {
-        return room;
-    }
-
-    public void setRoom(String room) {
-        this.room = room;
-    }
-
-    public Course getCourse() {
-        return course;
-    }
-
-    public void setCourse(Course course) {
-        this.course = course;
-    }
-
-    public Teacher getTeacher() {
-        return teacher;
-    }
-
-    public void setTeacher(Teacher teacher) {
-        this.teacher = teacher;
-    }
-
-    public Set<Student> getStudents() {
-        return students;
-    }
-
-    public void setStudents(Set<Student> students) {
-        this.students = students;
-    }
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
         Schedule schedule = (Schedule) o;
-        return Objects.equals(id, schedule.id);
+        return getId() != null && Objects.equals(getId(), schedule.getId());
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(id);
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }

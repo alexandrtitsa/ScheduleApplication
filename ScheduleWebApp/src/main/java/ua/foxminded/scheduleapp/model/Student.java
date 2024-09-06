@@ -9,8 +9,15 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.proxy.HibernateProxy;
 
+@Getter
+@Setter
 @Entity
+@ToString
 @Table(name = "students")
 public class Student extends User {
 
@@ -18,6 +25,7 @@ public class Student extends User {
     @JoinColumn(name = "group_id", nullable = false)
     private Group group;
 
+    @ToString.Exclude
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "student_courses",
@@ -26,43 +34,23 @@ public class Student extends User {
     )
     private Set<Course> courses;
 
+    @ToString.Exclude
     @ManyToMany(mappedBy = "students", fetch = FetchType.LAZY)
     private Set<Schedule> schedules;
 
-
-    public Group getGroup() {
-        return group;
-    }
-
-    public void setGroup(Group group) {
-        this.group = group;
-    }
-
-    public Set<Course> getCourses() {
-        return courses;
-    }
-
-    public void setCourses(Set<Course> courses) {
-        this.courses = courses;
-    }
-
-    public Set<Schedule> getSchedules() {
-        return schedules;
-    }
-
-    public void setSchedules(Set<Schedule> schedules) {
-        this.schedules = schedules;
-    }
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
         Student student = (Student) o;
-        return Objects.equals(getId(), student.getId());
+        return getId() != null && Objects.equals(getId(), student.getId());
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(getId());
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }
