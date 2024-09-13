@@ -33,7 +33,6 @@ CREATE TABLE courses (
 CREATE TABLE schedules (
     id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     date DATE NOT NULL,
-    time_slot VARCHAR(50) NOT NULL,
     room VARCHAR(50) NOT NULL,
     course_id BIGINT,
     teacher_id BIGINT,
