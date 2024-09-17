@@ -1,3 +1,5 @@
 spring:
-  application:
-    name: Schedule App
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    enabled: true
