@@ -18,7 +18,7 @@ public class TeacherController {
 
     @GetMapping("/teachers")
     public String listTeachers(Model model) {
-        model.addAttribute("teachers", teacherService.getAllTeachers());
+        model.addAttribute("teachers", teacherService.listTeachers());
         return "teachers/list";
     }
 }
