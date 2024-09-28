@@ -6,8 +6,6 @@ import java.util.Optional;
 
 public interface CourseService {
 
-    List<Course> listCourses();
-
     Optional<Course> getCourseById(Long id);
 
     Course findByIdOrThrow(Long id);
@@ -17,4 +15,6 @@ public interface CourseService {
     Course updateCourse(Long id, Course course);
 
     void deleteCourse(Long id);
+
+	List<Course> getAllCourses();
 }

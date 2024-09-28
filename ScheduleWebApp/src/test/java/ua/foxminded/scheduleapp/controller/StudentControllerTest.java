@@ -5,11 +5,14 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import ua.foxminded.scheduleapp.model.Student;
-import ua.foxminded.scheduleapp.service.StudentService;
+import ua.foxminded.scheduleapp.model.Schedule;
+import ua.foxminded.scheduleapp.model.Teacher;
+import ua.foxminded.scheduleapp.service.ScheduleService;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -23,19 +26,36 @@ class StudentControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private StudentService studentService;
+    private ScheduleService scheduleService;
 
     @Test
-    void testListStudents() throws Exception {
-        Student student1 = new Student();
-        Student student2 = new Student();
+    @WithMockUser(username = "user1", roles = {"STUDENT"})
+    void testShowStudentSchedule() throws Exception {
 
-        Mockito.when(studentService.listStudents()).thenReturn(Arrays.asList(student1, student2));
+        Teacher teacher1 = new Teacher();
+        teacher1.setFirstName("John");
+        teacher1.setLastName("Doe");
+        
+        Teacher teacher2 = new Teacher();
+        teacher2.setFirstName("Jane");
+        teacher2.setLastName("Smith");
 
-        mockMvc.perform(get("/students"))
-            .andExpect(status().isOk())
-            .andExpect(view().name("students/list"))
-            .andExpect(model().attributeExists("students"))
-            .andExpect(model().attribute("students", Arrays.asList(student1, student2)));
+        Schedule schedule1 = new Schedule();
+        schedule1.setCourseName("Math");
+        schedule1.setTeacher(teacher1);
+        
+        Schedule schedule2 = new Schedule();
+        schedule2.setCourseName("History");
+        schedule2.setTeacher(teacher2);
+
+        List<Schedule> schedules = Arrays.asList(schedule1, schedule2);
+
+        Mockito.when(scheduleService.getStudentSchedules()).thenReturn(schedules);
+
+        mockMvc.perform(get("/student/schedule"))
+               .andExpect(status().isOk())
+               .andExpect(view().name("student/schedule"))
+               .andExpect(model().attributeExists("schedules"))
+               .andExpect(model().attribute("schedules", schedules));
     }
 }

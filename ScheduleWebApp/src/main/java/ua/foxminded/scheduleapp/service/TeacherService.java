@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface TeacherService {
 
-    List<Teacher> listTeachers();
+    List<Teacher> getAllTeachers();
 
     Optional<Teacher> getTeacherById(Long id);
 
@@ -15,4 +15,5 @@ public interface TeacherService {
     Teacher updateTeacher(Long id, Teacher teacher);
 
     void deleteTeacher(Long id);
+
 }

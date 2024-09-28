@@ -2,13 +2,14 @@ package ua.foxminded.scheduleapp.model;
 
 import java.util.Objects;
 import java.util.Set;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.Table;
+import jakarta.persistence.JoinTable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -21,9 +22,9 @@ import org.hibernate.proxy.HibernateProxy;
 @Table(name = "students")
 public class Student extends User {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_id", nullable = false)
-    private Group group;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "group_id", nullable = false)
+	private Group group;
 
     @ToString.Exclude
     @ManyToMany(fetch = FetchType.LAZY)

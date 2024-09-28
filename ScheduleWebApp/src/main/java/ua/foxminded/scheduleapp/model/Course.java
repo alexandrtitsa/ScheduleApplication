@@ -29,7 +29,7 @@ public class Course {
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
-
+    
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
