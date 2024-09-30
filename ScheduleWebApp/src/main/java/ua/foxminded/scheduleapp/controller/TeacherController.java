@@ -4,21 +4,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import ua.foxminded.scheduleapp.service.TeacherService;
+import ua.foxminded.scheduleapp.service.ScheduleService;
 
 @Controller
 public class TeacherController {
 
-    private final TeacherService teacherService;
+    private final ScheduleService scheduleService;
 
     @Autowired
-    public TeacherController(TeacherService teacherService) {
-        this.teacherService = teacherService;
+    public TeacherController(ScheduleService scheduleService) {
+        this.scheduleService = scheduleService;
     }
 
-    @GetMapping("/teachers")
-    public String listTeachers(Model model) {
-        model.addAttribute("teachers", teacherService.listTeachers());
-        return "teachers/list";
+    @GetMapping("/teacher/schedule")
+    public String showTeacherSchedule(Model model) {
+        model.addAttribute("schedules", scheduleService.getTeacherSchedules());
+        return "/teacher/schedule";
     }
+
 }
