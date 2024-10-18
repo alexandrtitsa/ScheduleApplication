@@ -63,4 +63,10 @@ public class CourseServiceImpl implements CourseService {
         }
         courseRepository.deleteById(id);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Course> findByName(String courseName) {
+        return courseRepository.findByCourseName(courseName);
+    }
 }

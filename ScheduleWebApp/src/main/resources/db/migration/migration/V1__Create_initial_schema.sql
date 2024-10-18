@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS teachers (
 );
 
 CREATE TABLE IF NOT EXISTS courses (
-    id BIGINT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     course_name VARCHAR(100) NOT NULL,
     description TEXT
 );
@@ -75,9 +75,11 @@ CREATE TABLE IF NOT EXISTS student_schedules (
 );
 
 CREATE TABLE IF NOT EXISTS teacher_courses (
-    teacher_id BIGINT,
-    course_id BIGINT,
-    PRIMARY KEY (teacher_id, course_id),
+    id BIGSERIAL PRIMARY KEY,
+    teacher_id BIGINT NOT NULL,
+    course_id BIGINT NOT NULL,
+    group_id BIGINT NOT NULL,
     FOREIGN KEY (teacher_id) REFERENCES teachers(id),
-    FOREIGN KEY (course_id) REFERENCES courses(id)
+    FOREIGN KEY (course_id) REFERENCES courses(id),
+    FOREIGN KEY (group_id) REFERENCES groups(id)
 );

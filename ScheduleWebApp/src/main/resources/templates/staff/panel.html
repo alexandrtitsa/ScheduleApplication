@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staff Panel</title>
+<link rel="stylesheet" href="/css/styles.css">
+<script>
+	// JavaScript для перенаправлення на форму створення нового курсу або групи
+	function handleCourseChange() {
+		var courseSelect = document.getElementById("courseName");
+		var selectedValue = courseSelect.value;
+
+		// Якщо обрано "Add New Course", перенаправляємо на сторінку створення курсу
+		if (selectedValue === "new") {
+			window.location.href = "/staff/courses/create";
+		}
+	}
+
+	function handleGroupChange() {
+		var groupSelect = document.getElementById("groupName");
+		var selectedValue = groupSelect.value;
+
+		// Якщо обрано "Add New Group", перенаправляємо на сторінку створення групи
+		if (selectedValue === "new") {
+			window.location.href = "/staff/groups/create";
+		}
+	}
+</script>
+</head>
+<body>
+	<header>
+		<h1>Staff Panel</h1>
+		<nav>
+			<ul>
+				<li><a href="/login">Logout</a></li>
+			</ul>
+		</nav>
+	</header>
+
+	<main>
+		<section>
+			<form action="/staff/teacher-courses/add" method="post">
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+				<label for="courseName">Course Name:</label> 
+				<select id="courseName" name="courseName" onchange="handleCourseChange()" required>
+					<option value="">-- Select a Course --</option>
+					<option th:each="course : ${courses}" th:value="${course.id}" th:text="${course.courseName}"></option>
+					<option value="new">Add New Course</option>
+				</select>
+
+				<label for="teacher">Teacher Name:</label> 
+				<select id="teacher" name="teacher" required>
+					<option value="">-- Select a Teacher --</option>
+					<option th:each="teacher : ${teachers}" th:value="${teacher.id}" th:text="${teacher.firstName + ' ' + teacher.lastName}"></option>
+				</select>
+
+				<label for="groupName">Group Name:</label> 
+				<select id="groupName" name="groupName" onchange="handleGroupChange()" required>
+					<option value="">-- Select a Group --</option>
+					<option th:each="group : ${groups}" th:value="${group.id}" th:text="${group.groupName}"></option>
+					<option value="new">Add New Group</option>
+				</select>
+
+				<button type="submit">Add Teacher Course</button>
+			</form>
+		</section>
+
+		<section>
+			<h2>Current Teacher Courses</h2>
+			<table>
+				<thead>
+					<tr>
+						<th>Course Name</th>
+						<th>Teacher Name</th>
+						<th>Group Name</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="teacherCourse : ${teacherCourses}">
+						<td th:text="${teacherCourse.course.courseName}"></td>
+						<td th:text="${teacherCourse.teacher.firstName + ' ' + teacherCourse.teacher.lastName}"></td>
+						<td th:text="${teacherCourse.group.groupName}"></td>
+						<td>
+							<a th:href="@{/staff/teacher-courses/edit/{teacherId}/{courseId}/{groupId}(teacherId=${teacherCourse.teacher.id}, courseId=${teacherCourse.course.id}, groupId=${teacherCourse.group.id})}">Edit</a>
+							<form action="/staff/teacher-courses/delete" method="post" style="display: inline;">
+								<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+								<input type="hidden" name="teacherId" th:value="${teacherCourse.teacher.id}">
+								<input type="hidden" name="courseId" th:value="${teacherCourse.course.id}">
+								<input type="hidden" name="groupId" th:value="${teacherCourse.group.id}">
+								<button type="submit">Delete</button>
+							</form>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</section>
+	</main>
+</body>
+</html>

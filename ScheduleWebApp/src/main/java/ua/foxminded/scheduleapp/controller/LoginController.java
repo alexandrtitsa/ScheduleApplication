@@ -26,8 +26,12 @@ public class LoginController {
         } else if (authentication.getAuthorities().stream()
                 .anyMatch(role -> role.getAuthority().equals("ROLE_TEACHER"))) {
             return "redirect:/teacher/schedule";
+        } else if (authentication.getAuthorities().stream()
+                .anyMatch(role -> role.getAuthority().equals("ROLE_STAFF"))) {
+            return "redirect:/staff/panel";
         }
-        
+
         return "redirect:/";
     }
+
 }

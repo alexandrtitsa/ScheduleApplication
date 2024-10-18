@@ -1,17 +1,21 @@
-INSERT INTO groups (group_name) VALUES ('Group 1'), ('Group 2');
+INSERT INTO groups (group_name) VALUES ('Group 1'), ('Group 2'), ('Group 3');
 
-INSERT INTO courses (id, course_name, description) VALUES 
-(1, 'Math 101', 'Basic Mathematics'),
-(2, 'History 101', 'World History');
+INSERT INTO courses (course_name, description) VALUES 
+('Math 101', 'Basic Mathematics'),
+('History 101', 'World History'),
+('Physics 101', 'Basic Physics');
 
-INSERT INTO roles (name) VALUES ('STUDENT'), ('TEACHER'), ('ADMIN');
+INSERT INTO roles (name) VALUES ('STUDENT'), ('TEACHER'), ('ADMIN'), ('STAFF');
 
 TRUNCATE TABLE users RESTART IDENTITY CASCADE;
 
 INSERT INTO users (email, password, first_name, last_name, role) VALUES
 ('john.stud@example.com', '$2a$12$owM8asOHBmgu7OZdrGcarukvA9GSNPGLo90ybvaRb3ACvAaF2bwLi', 'John', 'Stud', 'STUDENT'),  -- пароль: 1234
 ('jane.teach@example.com', '$2a$12$FwE7N0kO2uIss90dIQ0kHefvC8YFwxYtaToVb1UwP51Cyb/EArUNS', 'Jane', 'Teach', 'TEACHER'),  -- пароль: qwer
+('scot.teach@example.com', '$2a$12$FwE7N0kO2uIss90dIQ0kHefvC8YFwxYtaToVb1UwP51Cyb/EArUNS', 'Scot', 'Teach', 'TEACHER'),  -- пароль: qwer
+('piter.teach@example.com', '$2a$12$FwE7N0kO2uIss90dIQ0kHefvC8YFwxYtaToVb1UwP51Cyb/EArUNS', 'Piter', 'Teach', 'TEACHER'),  -- пароль: qwer
 ('jacob.use@example.com', '$2a$12$.Aksh/Mq.gF5j47Ab39MEOeV5XF8iDbnEhyYD23fPfbUv.EYysSRi', 'Jacob', 'Use', 'USER'),      -- пароль: asdf
+('jolene.staf@example.com', '$2a$12$mDpZH9SKkcUpvB9g0F7Wbe1L0RirM6s0zgV8kNJuNrpij.Isik2w6', 'Jolene', 'Staf', 'STAFF'),  -- пароль: poiu
 ('jack.admi@example.com', '$2a$12$t8obp6gahRtnTK4NQufxYerKciSzHWUEVarNn01d7Aqj358DqPfsu', 'Jack', 'Admi', 'ADMIN');      -- пароль: zxcv
 
 INSERT INTO user_roles (user_id, role_id)
@@ -36,3 +40,6 @@ WHERE r.name = 'TEACHER';
 
 INSERT INTO schedules (date, time_slot, room, course_name, course_id, teacher_id)
 VALUES ('2024-05-15', '09:00:00', 'Room 101', 'Math 101', 1, 2);
+
+INSERT INTO teacher_courses (teacher_id, course_id, group_id)
+VALUES (2, 1, 2);
