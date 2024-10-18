@@ -27,6 +27,7 @@ public class SecurityConfig {
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/student/**").hasRole("STUDENT")
                 .requestMatchers("/teacher/**").hasRole("TEACHER")
+                .requestMatchers("/staff/**").hasRole("STAFF")
                 .anyRequest().authenticated()
             )
             .csrf(csrf -> csrf

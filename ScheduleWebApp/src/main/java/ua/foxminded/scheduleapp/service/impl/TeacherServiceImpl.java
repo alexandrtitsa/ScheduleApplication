@@ -3,6 +3,7 @@ package ua.foxminded.scheduleapp.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import ua.foxminded.scheduleapp.model.Teacher;
 import ua.foxminded.scheduleapp.repository.TeacherRepository;
 import ua.foxminded.scheduleapp.service.TeacherService;
@@ -52,5 +53,11 @@ public class TeacherServiceImpl implements TeacherService {
     @Transactional
     public void deleteTeacher(Long id) {
         teacherRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Teacher> findByName(String firstName, String lastName) {
+        return teacherRepository.findByFirstNameAndLastName(firstName, lastName);
     }
 }

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create New Group</title>
+</head>
+<body>
+	<header>
+		<h1>Create New Group</h1>
+		<nav>
+			<ul>
+				<li><a href="/staff/panel">Back to Panel</a></li>
+			</ul>
+		</nav>
+	</header>
+
+	<main>
+		<form action="/staff/groups/create" method="post">
+			<input type="hidden" th:name="${_csrf.parameterName}"
+				th:value="${_csrf.token}" />
+
+			<!-- Інші поля форми -->
+			<label for="groupName">Group Name:</label> <input type="text"
+				id="groupName" name="groupName" required>
+
+			<button type="submit">Create Group</button>
+		</form>
+
+	</main>
+</body>
+</html>

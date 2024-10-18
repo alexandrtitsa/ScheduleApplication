@@ -16,4 +16,6 @@ public interface TeacherService {
 
     void deleteTeacher(Long id);
 
+	Optional<Teacher> findByName(String firstName, String lastName);
+
 }
