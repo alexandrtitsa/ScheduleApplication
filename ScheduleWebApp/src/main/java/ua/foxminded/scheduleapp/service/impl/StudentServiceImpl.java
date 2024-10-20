@@ -54,4 +54,16 @@ public class StudentServiceImpl implements StudentService {
     public void deleteStudent(Long id) {
         studentRepository.deleteById(id);
     }
+
+    @Override
+    @Transactional
+    public void updateStudent(Student student) {
+        studentRepository.save(student);
+    }
+
+    @Transactional(readOnly = true)
+	@Override
+	public List<Student> findByGroupId(Long groupId) {
+	    return studentRepository.findByGroupId(groupId);
+	}
 }

@@ -7,10 +7,12 @@ import org.springframework.web.bind.annotation.*;
 
 import ua.foxminded.scheduleapp.model.Course;
 import ua.foxminded.scheduleapp.model.Group;
+import ua.foxminded.scheduleapp.model.Student;
 import ua.foxminded.scheduleapp.model.Teacher;
 import ua.foxminded.scheduleapp.model.TeacherCourse;
 import ua.foxminded.scheduleapp.service.CourseService;
 import ua.foxminded.scheduleapp.service.GroupService;
+import ua.foxminded.scheduleapp.service.StudentService;
 import ua.foxminded.scheduleapp.service.TeacherCourseService;
 import ua.foxminded.scheduleapp.service.TeacherService;
 
@@ -25,16 +27,19 @@ public class StaffController {
     private final TeacherService teacherService;
     private final CourseService courseService;
     private final GroupService groupService;
+    private final StudentService studentService;
 
     @Autowired
     public StaffController(TeacherCourseService teacherCourseService,
                            TeacherService teacherService,
                            CourseService courseService,
-                           GroupService groupService) {
+                           GroupService groupService,
+                           StudentService studentService) {
         this.teacherCourseService = teacherCourseService;
         this.teacherService = teacherService;
         this.courseService = courseService;
         this.groupService = groupService;
+        this.studentService = studentService;
     }
 
     @GetMapping("/panel")
@@ -155,12 +160,61 @@ public class StaffController {
     @GetMapping("/groups/create")
     public String showCreateGroupForm(Model model) {
         model.addAttribute("group", new Group());
+        
+        List<Group> groups = groupService.getAllGroups();
+        model.addAttribute("groups", groups);
+        
+        List<Student> students = studentService.listStudents();
+        model.addAttribute("students", students);
+        
         return "staff/create-group";
     }
-
+    
     @PostMapping("/groups/create")
     public String createGroup(@ModelAttribute Group group) {
         groupService.createGroup(group);
         return "redirect:/staff/panel";
     }
+    
+    @PostMapping("/students/change-group")
+    public String changeStudentGroup(@RequestParam("studentId") Long studentId, 
+                                     @RequestParam("groupId") Long groupId, 
+                                     Model model) {
+        Optional<Student> studentOptional = studentService.getStudentById(studentId);
+        if (!studentOptional.isPresent()) {
+            model.addAttribute("errorMessage", "Student not found with ID: " + studentId);
+            return "staff/error";
+        }
+
+        Optional<Group> groupOptional = groupService.getGroupById(groupId);
+        if (!groupOptional.isPresent()) {
+            model.addAttribute("errorMessage", "Group not found with ID: " + groupId);
+            return "staff/error";
+        }
+
+        Student student = studentOptional.get();
+        student.setGroup(groupOptional.get());
+
+        studentService.updateStudent(student);
+
+        return "redirect:/staff/groups/create";
+    }
+    
+    @PostMapping("/groups/delete")
+    public String deleteGroup(@RequestParam Long groupId) {
+        Group defaultGroup = groupService.findByName("Group 1")
+                .orElseThrow(() -> new IllegalStateException("Default group 'Group 1' not found"));
+
+        List<Student> studentsInGroup = studentService.findByGroupId(groupId);
+        
+        for (Student student : studentsInGroup) {
+            student.setGroup(defaultGroup);
+            studentService.updateStudent(student);
+        }
+        
+        groupService.deleteGroup(groupId);
+
+        return "redirect:/staff/groups/create";
+    }
+
 }

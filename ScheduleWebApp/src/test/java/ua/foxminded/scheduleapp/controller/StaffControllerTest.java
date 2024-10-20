@@ -1,160 +1,132 @@
 package ua.foxminded.scheduleapp.controller;
 
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.test.web.servlet.MockMvc;
-import ua.foxminded.scheduleapp.model.Course;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ua.foxminded.scheduleapp.model.Group;
-import ua.foxminded.scheduleapp.model.Teacher;
-import ua.foxminded.scheduleapp.model.TeacherCourse;
-import ua.foxminded.scheduleapp.service.CourseService;
+import ua.foxminded.scheduleapp.model.Student;
 import ua.foxminded.scheduleapp.service.GroupService;
-import ua.foxminded.scheduleapp.service.TeacherCourseService;
-import ua.foxminded.scheduleapp.service.TeacherService;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import ua.foxminded.scheduleapp.service.StudentService;
 
-import java.util.Collections;
-import java.util.List;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-@WebMvcTest(StaffController.class)
 public class StaffControllerTest {
 
-    @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private TeacherCourseService teacherCourseService;
-
-    @MockBean
-    private TeacherService teacherService;
-
-    @MockBean
-    private CourseService courseService;
-
-    @MockBean
+    @Mock
     private GroupService groupService;
 
-    private Teacher teacher;
-    private Course course;
-    private Group group;
-    private TeacherCourse teacherCourse;
+    @Mock
+    private StudentService studentService;
+
+    @InjectMocks
+    private StaffController staffController;
 
     @BeforeEach
-    void setUp() {
-        teacher = new Teacher();
-        teacher.setId(1L);
-        teacher.setFirstName("John Doe");
-
-        course = new Course();
-        course.setId(1L);
-        course.setCourseName("Math");
-
-        group = new Group();
-        group.setId(1L);
-        group.setGroupName("Group A");
-
-        teacherCourse = new TeacherCourse();
-        teacherCourse.setTeacher(teacher);
-        teacherCourse.setCourse(course);
-        teacherCourse.setGroup(group);
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(staffController).build();
     }
 
     @Test
-    @WithMockUser(roles = "STAFF")
-    public void testShowTeacherCourses() throws Exception {
-        when(teacherService.getAllTeachers()).thenReturn(Collections.emptyList());
-        when(courseService.getAllCourses()).thenReturn(Collections.emptyList());
-        when(groupService.getAllGroups()).thenReturn(Collections.emptyList());
-        when(teacherCourseService.getAllTeacherCourses()).thenReturn(Collections.emptyList());
+    public void testShowCreateGroupForm() throws Exception {
 
-        mockMvc.perform(get("/staff/panel"))
-               .andExpect(status().isOk())
-               .andExpect(view().name("staff/panel"))
-               .andExpect(model().attributeExists("teachers"))
-               .andExpect(model().attributeExists("courses"))
-               .andExpect(model().attributeExists("groups"))
-               .andExpect(model().attributeExists("teacherCourses"));
-    }
+        Group group1 = new Group();
+        group1.setId(1L);
+        group1.setGroupName("Group 1");
 
-    @Test
-    @WithMockUser(roles = "STAFF")
-    void testAddTeacherCourse() throws Exception {
-    	mockMvc.perform(post("/staff/teacher-courses/add")
-    	        .with(csrf())
-    	        .param("teacher", "1")
-    	        .param("courseName", "1")
-    	        .param("groupName", "1"))
-    	        .andExpect(status().isOk());
-    }
+        Group group2 = new Group();
+        group2.setId(2L);
+        group2.setGroupName("Group 2");
 
-    @Test
-    @WithMockUser(roles = "STAFF")
-    void testDeleteTeacherCourse() throws Exception {
-    	mockMvc.perform(post("/staff/teacher-courses/delete")
-    	        .with(csrf())
-    	        .param("teacherId", "1")
-    	        .param("courseId", "1")
-    	        .param("groupId", "1"))
-    	        .andExpect(status().is3xxRedirection());
-    }
+        Student student1 = new Student();
+        student1.setId(1L);
+        student1.setFirstName("John");
+        student1.setLastName("Doe");
 
-    @Test
-    @WithMockUser(roles = "STAFF")
-    void testShowEditForm() throws Exception {
-        when(teacherCourseService.findByTeacherCourseGroupId(1L, 1L, 1L)).thenReturn(teacherCourse);
-        when(courseService.getAllCourses()).thenReturn(List.of(course));
-        when(groupService.getAllGroups()).thenReturn(List.of(group));
-        when(teacherService.getAllTeachers()).thenReturn(List.of(teacher));
+        Student student2 = new Student();
+        student2.setId(2L);
+        student2.setFirstName("Jane");
+        student2.setLastName("Doe");
 
-        mockMvc.perform(get("/staff/teacher-courses/edit/1/1/1"))
+        List<Group> groups = Arrays.asList(group1, group2);
+        List<Student> students = Arrays.asList(student1, student2);
+
+        when(groupService.getAllGroups()).thenReturn(groups);
+        when(studentService.listStudents()).thenReturn(students);
+
+        mockMvc.perform(get("/staff/groups/create"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("staff/edit-teacher-course"))
-                .andExpect(model().attributeExists("teacherCourse", "teachers", "courses", "groups"));
+                .andExpect(view().name("staff/create-group"))
+                .andExpect(model().attributeExists("group"))
+                .andExpect(model().attributeExists("groups"))
+                .andExpect(model().attributeExists("students"))
+                .andExpect(model().attribute("groups", groups))
+                .andExpect(model().attribute("students", students));
+
+        verify(groupService).getAllGroups();
+        verify(studentService).listStudents();
     }
 
     @Test
-    @WithMockUser(roles = "STAFF")
-    void testUpdateTeacherCourse() throws Exception {
-        when(teacherCourseService.findByTeacherCourseGroupId(1L, 1L, 1L)).thenReturn(teacherCourse);
+    public void testChangeStudentGroup() throws Exception {
+        Group newGroup = new Group();
+        newGroup.setId(1L);
+        newGroup.setGroupName("New Group");
 
-        mockMvc.perform(post("/staff/teacher-courses/update")
-                .with(csrf())
-                .param("teacherId", "1")
-                .param("courseId", "1")
-                .param("groupId", "1")
-                .param("newTeacherId", "2")
-                .param("newGroupId", "2"))
-                .andExpect(status().is3xxRedirection());
-    }
+        Student student = new Student();
+        student.setId(1L);
+        student.setFirstName("John");
+        student.setLastName("Doe");
 
-    @Test
-    @WithMockUser(roles = "STAFF")
-    void testCreateCourse() throws Exception {
-        mockMvc.perform(post("/staff/courses/create")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("courseName", "Test Course")
-                .param("description", "Test Description"))
-                .andExpect(status().is3xxRedirection());
-    }
+        when(studentService.getStudentById(anyLong())).thenReturn(Optional.of(student));
+        when(groupService.getGroupById(anyLong())).thenReturn(Optional.of(newGroup));
 
-    @Test
-    @WithMockUser(roles = "STAFF")
-    void testCreateGroup() throws Exception {
-        mockMvc.perform(post("/staff/groups/create")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .flashAttr("group", group))
+        mockMvc.perform(post("/staff/students/change-group")
+                .param("studentId", "1")
+                .param("groupId", "1"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/staff/panel"));
+                .andExpect(redirectedUrl("/staff/groups/create"));
+
+        verify(studentService).updateStudent(student);
     }
 
+    @Test
+    public void testDeleteGroup() throws Exception {
+        Group defaultGroup = new Group();
+        defaultGroup.setId(1L);
+        defaultGroup.setGroupName("Group 1");
+
+        Student student1 = new Student();
+        student1.setId(1L);
+        student1.setGroup(defaultGroup);
+
+        when(groupService.findByName("Group 1")).thenReturn(Optional.of(defaultGroup));
+        when(studentService.findByGroupId(anyLong())).thenReturn(Arrays.asList(student1));
+
+        mockMvc.perform(post("/staff/groups/delete")
+                .param("groupId", "2"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/staff/groups/create"));
+
+        verify(groupService).deleteGroup(2L);
+        verify(studentService).updateStudent(student1);
+    }
 }

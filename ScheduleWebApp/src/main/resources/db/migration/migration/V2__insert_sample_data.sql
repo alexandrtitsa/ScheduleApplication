@@ -10,7 +10,10 @@ INSERT INTO roles (name) VALUES ('STUDENT'), ('TEACHER'), ('ADMIN'), ('STAFF');
 TRUNCATE TABLE users RESTART IDENTITY CASCADE;
 
 INSERT INTO users (email, password, first_name, last_name, role) VALUES
-('john.stud@example.com', '$2a$12$owM8asOHBmgu7OZdrGcarukvA9GSNPGLo90ybvaRb3ACvAaF2bwLi', 'John', 'Stud', 'STUDENT'),  -- пароль: 1234
+('sabrina.stud@example.com', '$2a$12$owM8asOHBmgu7OZdrGcarukvA9GSNPGLo90ybvaRb3ACvAaF2bwLi', 'Sabrina', 'Stud', 'STUDENT'),  -- пароль: 1234
+('steven.stud@example.com', '$2a$12$owM8asOHBmgu7OZdrGcarukvA9GSNPGLo90ybvaRb3ACvAaF2bwLi', 'Steven', 'Stud', 'STUDENT'),  -- пароль: 1234
+('selena.stud@example.com', '$2a$12$owM8asOHBmgu7OZdrGcarukvA9GSNPGLo90ybvaRb3ACvAaF2bwLi', 'Selena', 'Stud', 'STUDENT'),  -- пароль: 1234
+('simon.stud@example.com', '$2a$12$owM8asOHBmgu7OZdrGcarukvA9GSNPGLo90ybvaRb3ACvAaF2bwLi', 'Simon', 'Stud', 'STUDENT'),  -- пароль: 1234
 ('jane.teach@example.com', '$2a$12$FwE7N0kO2uIss90dIQ0kHefvC8YFwxYtaToVb1UwP51Cyb/EArUNS', 'Jane', 'Teach', 'TEACHER'),  -- пароль: qwer
 ('scot.teach@example.com', '$2a$12$FwE7N0kO2uIss90dIQ0kHefvC8YFwxYtaToVb1UwP51Cyb/EArUNS', 'Scot', 'Teach', 'TEACHER'),  -- пароль: qwer
 ('piter.teach@example.com', '$2a$12$FwE7N0kO2uIss90dIQ0kHefvC8YFwxYtaToVb1UwP51Cyb/EArUNS', 'Piter', 'Teach', 'TEACHER'),  -- пароль: qwer
@@ -39,7 +42,18 @@ JOIN roles r ON ur.role_id = r.id
 WHERE r.name = 'TEACHER';
 
 INSERT INTO schedules (date, time_slot, room, course_name, course_id, teacher_id)
-VALUES ('2024-05-15', '09:00:00', 'Room 101', 'Math 101', 1, 2);
+VALUES (
+    '2024-05-15', 
+    '09:00:00', 
+    'Room 101', 
+    'Math 101', 
+    (SELECT id FROM courses WHERE course_name = 'Math 101'), 
+    (SELECT id FROM teachers WHERE email = 'jane.teach@example.com')
+);
 
 INSERT INTO teacher_courses (teacher_id, course_id, group_id)
-VALUES (2, 1, 2);
+VALUES (
+    (SELECT id FROM teachers WHERE email = 'jane.teach@example.com'), 
+    (SELECT id FROM courses WHERE course_name = 'Math 101'), 
+    (SELECT id FROM groups WHERE group_name = 'Group 2')
+);
