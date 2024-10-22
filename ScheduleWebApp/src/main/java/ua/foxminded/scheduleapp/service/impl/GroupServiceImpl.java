@@ -69,4 +69,10 @@ public class GroupServiceImpl implements GroupService {
     public Optional<Group> findByName(String groupName) {
         return groupRepository.findByGroupName(groupName);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Long> getGroupIdsByCourseId(Long courseId) {
+        return groupRepository.findGroupIdsByCourseId(courseId);
+    }
 }

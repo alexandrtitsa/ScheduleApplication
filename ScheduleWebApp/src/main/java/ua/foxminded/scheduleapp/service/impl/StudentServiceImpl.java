@@ -66,4 +66,10 @@ public class StudentServiceImpl implements StudentService {
 	public List<Student> findByGroupId(Long groupId) {
 	    return studentRepository.findByGroupId(groupId);
 	}
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Student> getStudentsByGroupIds(List<Long> groupIds) {
+        return studentRepository.findStudentsByGroupIds(groupIds);
+    }
 }
