@@ -20,4 +20,5 @@ public interface GroupService {
 
 	Optional<Group> findByName(String groupName);
 	
+    List<Long> getGroupIdsByCourseId(Long courseId);
 }
