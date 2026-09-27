@@ -1,93 +1,430 @@
-# Task 3.1 Decompose university
+# University Schedule App
 
+A web-based university schedule management system built with **Java and Spring Boot**. The application provides role-based access for university staff and allows managing students, teachers, courses, classrooms, and academic schedules.
 
+The project demonstrates a layered Spring architecture, role-based authorization, database persistence, validation, transaction management, and server-side rendering with Thymeleaf.
 
-## Getting started
+## Features
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+* Role-based access control for different types of users
+* Authentication using email and password
+* Separate functionality for:
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+  * **ADMIN** — manages users, courses, classrooms, and schedules
+  * **TEACHER** — views and manages assigned teaching schedules
+  * **STUDENT** — views their academic schedule
+  * **STAFF** — manages academic schedule data
+* Course management
+* Teacher management
+* Student management
+* Classroom management
+* Schedule management
+* Schedule filtering and viewing
+* Server-side form validation
+* Persistent data storage in PostgreSQL
+* Database schema versioning with Flyway
+* Transaction management with Spring `@Transactional`
+* Password hashing with Spring Security
+* MVC architecture with Thymeleaf templates
+* Unit and integration testing
 
-## Add your files
+## Tech Stack
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+### Backend
 
+* **Java 17**
+* **Spring Boot**
+* **Spring MVC**
+* **Spring Security**
+* **Spring Data JPA**
+* **Hibernate**
+* **Bean Validation**
+* **Thymeleaf**
+
+### Database
+
+* **PostgreSQL**
+* **Flyway**
+
+### Testing
+
+* **JUnit 5**
+* **Mockito**
+* **Spring Boot Test**
+* **MockMvc**
+
+### Build & Development
+
+* **Maven**
+* **Git**
+* **IntelliJ IDEA**
+
+## Architecture
+
+The application follows a layered architecture:
+
+```text
+Controller
+    ↓
+Service
+    ↓
+Repository
+    ↓
+Database
 ```
-cd existing_repo
-git remote add origin https://git.foxminded.ua/foxstudent106946/task-3.1-decompose-university.git
-git branch -M main
-git push -uf origin main
+
+### Main layers
+
+**Controller**
+
+Handles HTTP requests, validates input, prepares model attributes, and selects Thymeleaf views.
+
+**Service**
+
+Contains business logic and transaction boundaries. Service interfaces are used to separate business contracts from implementations.
+
+**Repository**
+
+Provides database access through Spring Data JPA.
+
+**Model**
+
+Contains JPA entities representing the application's domain.
+
+**Security**
+
+Contains authentication, authorization, password encoding, and custom user details handling.
+
+**View**
+
+Thymeleaf templates are used for server-side HTML rendering.
+
+## Domain Model
+
+The main entities include:
+
+* `User`
+* `Student`
+* `Teacher`
+* `Course`
+* `Schedule`
+* `Classroom`
+
+A schedule connects the main academic entities:
+
+```text
+Teacher
+   │
+   ├──────────┐
+   │          │
+   ▼          ▼
+Course ←── Schedule ──→ Classroom
 ```
 
-## Integrate with your tools
+The `Schedule` entity stores information such as:
 
-- [ ] [Set up project integrations](https://git.foxminded.ua/foxstudent106946/task-3.1-decompose-university/-/settings/integrations)
+* course
+* teacher
+* classroom
+* date
+* time slot
 
-## Collaborate with your team
+## Security
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+The application uses **Spring Security** for authentication and authorization.
 
-## Test and Deploy
+Users are assigned one of the following roles:
 
-Use the built-in continuous integration in GitLab.
+```text
+ROLE_ADMIN
+ROLE_STUDENT
+ROLE_TEACHER
+ROLE_STAFF
+```
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+Access to application resources is restricted according to the authenticated user's role.
 
-***
+Passwords are stored using a secure password encoder rather than plain text.
 
-# Editing this README
+## Database
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+The application uses **PostgreSQL** as the primary relational database.
 
-## Suggestions for a good README
+Database schema changes are managed with **Flyway migrations**.
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+Example migration structure:
 
-## Name
-Choose a self-explaining name for your project.
+```text
+src/main/resources/db/migration/
+├── V1__create_users_table.sql
+├── V2__create_students_table.sql
+├── V3__create_teachers_table.sql
+├── V4__create_courses_table.sql
+├── V5__create_classrooms_table.sql
+└── V6__create_schedules_table.sql
+```
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+Flyway ensures that database changes are versioned and applied consistently across environments.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+## Transaction Management
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+Business operations are executed inside Spring-managed transactions.
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+Service methods use:
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+```java
+@Transactional
+```
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+This ensures that operations modifying related entities are executed atomically and database changes are properly committed or rolled back when an error occurs.
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+## Validation
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+The application uses Jakarta Bean Validation for validating user input.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+Typical validation constraints include:
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+```java
+@NotBlank
+@Email
+@Size
+@NotNull
+```
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+Validation errors are handled at the MVC layer and displayed directly in Thymeleaf forms.
+
+## Project Structure
+
+```text
+src/
+├── main/
+│   ├── java/
+│   │   └── ua/
+│   │       └── foxminded/
+│   │           └── scheduleapp/
+│   │               ├── config/
+│   │               ├── controller/
+│   │               ├── model/
+│   │               ├── repository/
+│   │               ├── service/
+│   │               │   └── impl/
+│   │               └── ScheduleAppApplication.java
+│   │
+│   └── resources/
+│       ├── db/
+│       │   └── migration/
+│       ├── static/
+│       │   ├── css/
+│       │   └── js/
+│       ├── templates/
+│       │   ├── admin/
+│       │   ├── student/
+│       │   ├── teacher/
+│       │   └── ...
+│       └── application.properties
+│
+└── test/
+    └── java/
+        └── ua/
+            └── foxminded/
+                └── scheduleapp/
+```
+
+## Configuration
+
+Create a PostgreSQL database before starting the application.
+
+Example configuration:
+
+```properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/scheduleapp
+spring.datasource.username=postgres
+spring.datasource.password=your_password
+
+spring.jpa.hibernate.ddl-auto=validate
+
+spring.flyway.enabled=true
+```
+
+It is recommended to keep credentials outside the source code when deploying the application.
+
+For example, environment variables can be used:
+
+```properties
+spring.datasource.username=${DB_USERNAME}
+spring.datasource.password=${DB_PASSWORD}
+```
+
+## Running the Application
+
+### Prerequisites
+
+Make sure the following are installed:
+
+* Java 17+
+* Maven 3.8+
+* PostgreSQL 14+
+* Git
+
+### Clone the repository
+
+```bash
+git clone https://github.com/your-username/university-schedule-app.git
+cd university-schedule-app
+```
+
+### Configure PostgreSQL
+
+Create the database:
+
+```sql
+CREATE DATABASE scheduleapp;
+```
+
+Configure your database credentials in `application.properties` or through environment variables.
+
+### Run the application
+
+Using Maven:
+
+```bash
+./mvnw spring-boot:run
+```
+
+On Windows:
+
+```bash
+mvnw.cmd spring-boot:run
+```
+
+The application will start on:
+
+```text
+http://localhost:8080
+```
+
+## Testing
+
+Run the complete test suite:
+
+```bash
+./mvnw test
+```
+
+The project uses:
+
+* **JUnit 5** for unit and integration tests
+* **Mockito** for mocking dependencies
+* **Spring Boot Test** for application context testing
+* **MockMvc** for testing MVC controllers
+
+Tests cover service-layer business logic, controller behavior, validation, and repository interactions.
+
+## Development Principles
+
+The project follows several common Java/Spring development practices:
+
+* Layered architecture
+* Separation of concerns
+* Dependency Injection
+* Interface-based service design
+* DTO-oriented request handling where appropriate
+* Declarative transaction management
+* Repository abstraction through Spring Data JPA
+* Role-based authorization
+* Server-side validation
+* Database migration versioning
+* Unit and integration testing
+* Clean and maintainable code
+* Avoiding unnecessary duplication
+
+## Error Handling
+
+The application handles common application and validation errors at the MVC layer.
+
+Typical scenarios include:
+
+* Invalid form input
+* Missing entities
+* Unauthorized access
+* Invalid authentication credentials
+* Database-related failures
+
+Validation errors are returned to the corresponding Thymeleaf forms so users can correct their input.
+
+## Example Workflow
+
+A typical schedule management workflow:
+
+```text
+User Login
+    ↓
+Spring Security Authentication
+    ↓
+Role Verification
+    ↓
+Controller
+    ↓
+Service
+    ↓
+Repository
+    ↓
+PostgreSQL
+    ↓
+Thymeleaf View
+```
+
+For example, when a teacher opens their schedule:
+
+```text
+GET /teacher/schedule
+        ↓
+TeacherController
+        ↓
+ScheduleService
+        ↓
+ScheduleRepository
+        ↓
+PostgreSQL
+        ↓
+List<Schedule>
+        ↓
+teacher/schedule.html
+```
+
+## Future Improvements
+
+Possible future improvements include:
+
+* REST API for schedule management
+* Pagination and advanced filtering
+* Schedule conflict detection
+* Calendar-based schedule view
+* Email notifications
+* Import/export of schedules
+* Docker-based deployment
+* CI/CD pipeline
+* API documentation with OpenAPI / Swagger
+* Integration tests using Testcontainers
+* Audit logging
+* Internationalization
+
+## Project Purpose
+
+This project was created as a practical **Java/Spring backend project** to demonstrate experience with:
+
+* Spring Boot application development
+* Spring Security
+* Spring Data JPA and Hibernate
+* PostgreSQL database design
+* Flyway database migrations
+* Transaction management
+* MVC architecture
+* Thymeleaf
+* Role-based access control
+* Automated testing
+* Clean and maintainable backend architecture
 
 ## License
-For open source projects, say how it is licensed.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+This project is intended for educational and portfolio purposes.
